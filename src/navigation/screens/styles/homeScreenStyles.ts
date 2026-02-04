@@ -1,20 +1,7 @@
-import React from 'react';
-import {
-  View,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  useColorScheme,
-} from 'react-native';
-import { useCart } from '../../context/CartContext';
+import { StyleSheet } from 'react-native';
 
-export function HomeScreen() {
-  const { products, addToCart } = useCart();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
-  const styles = StyleSheet.create({
+export const createHomeScreenStyles = (isDark: boolean) =>
+  StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5',
@@ -68,31 +55,3 @@ export function HomeScreen() {
       fontWeight: '600',
     },
   });
-
-  const renderProduct = ({ item }: any) => (
-    <View style={styles.productContainer}>
-      <Text style={styles.productName}>{item.name}</Text>
-      <Text style={styles.productPrice}>${item.price.toFixed(2)}</Text>
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => addToCart(item)}
-      >
-        <Text style={styles.addButtonText}>Add to Cart</Text>
-      </TouchableOpacity>
-    </View>
-  );
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Products</Text>
-      </View>
-      <FlatList
-        data={products}
-        renderItem={renderProduct}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
-    </View>
-  );
-}

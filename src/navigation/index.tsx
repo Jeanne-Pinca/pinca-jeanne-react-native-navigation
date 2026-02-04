@@ -4,12 +4,18 @@ import {
   StaticParamList,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Image } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import bell from '../assets/bell.png';
 import newspaper from '../assets/newspaper.png';
 import { HomeScreen } from './screens/HomeScreen';
 import { CartScreen } from './screens/CartScreen';
 import { CheckoutScreen } from './screens/CheckoutScreen';
+import { LightDarkToggle } from '../components/LightDarkToggle';
+import { CartBadge } from '../components/CartBadge';
+
+function ShopTabLabel() {
+  return <Text>Shop</Text>;
+}
 
 const ShoppingTabs = createBottomTabNavigator({
   screens: {
@@ -17,7 +23,8 @@ const ShoppingTabs = createBottomTabNavigator({
       screen: HomeScreen,
       options: {
         title: 'Shop',
-        tabBarLabel: 'Shop',
+        headerRight: () => <LightDarkToggle />,
+        tabBarLabel: ShopTabLabel,
         tabBarIcon: ({ color, size }) => (
           <Image
             source={newspaper}
@@ -30,20 +37,25 @@ const ShoppingTabs = createBottomTabNavigator({
         ),
       },
     },
+
     CartTab: {
       screen: CartScreen,
       options: {
         title: 'Cart',
+        headerRight: () => <LightDarkToggle />,
         tabBarLabel: 'Cart',
         tabBarIcon: ({ color, size }) => (
-          <Image
-            source={bell}
-            tintColor={color}
-            style={{
-              width: size,
-              height: size,
-            }}
-          />
+          <View style={{ position: 'relative' }}>
+            <Image
+              source={bell}
+              tintColor={color}
+              style={{
+                width: size,
+                height: size,
+              }}
+            />
+            <CartBadge />
+          </View>
         ),
       },
     },

@@ -1,9 +1,11 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface Product {
   id: string;
   name: string;
   price: number;
+  category?: string;
+  displayCategory?: string;
 }
 
 export interface CartItem extends Product {
@@ -12,6 +14,7 @@ export interface CartItem extends Product {
 
 interface CartContextType {
   products: Product[];
+  categories: string[];
   cartItems: CartItem[];
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
@@ -23,16 +26,40 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-const SAMPLE_PRODUCTS: Product[] = [
-  { id: '1', name: 'Laptop', price: 999.99 },
-  { id: '2', name: 'Smartphone', price: 699.99 },
-  { id: '3', name: 'Tablet', price: 399.99 },
-  { id: '4', name: 'Headphones', price: 149.99 },
-  { id: '5', name: 'Smartwatch', price: 299.99 },
-];
-
 export function CartProvider({ children }: { children: React.ReactNode }) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('https://fakestoreapi.com/products');
+        const data = await response.json();
+
+        const titleCase = (str: string) =>
+          str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+        const mappedProducts: Product[] = data.map((item: any) => ({
+          id: item.id.toString(),
+          name: item.title,
+          price: item.price,
+          category: item.category,
+          displayCategory: titleCase(item.category),
+        }));
+        setProducts(mappedProducts);
+
+        const uniqueCategories = [
+          ...new Set(mappedProducts.map((p) => p.category).filter(Boolean)),
+        ] as string[];
+        setCategories(uniqueCategories);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const addToCart = (product: Product) => {
     setCartItems((prevItems) => {
@@ -85,7 +112,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const value: CartContextType = {
-    products: SAMPLE_PRODUCTS,
+    products,
+    categories,
     cartItems,
     addToCart,
     removeFromCart,
