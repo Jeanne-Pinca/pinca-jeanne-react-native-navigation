@@ -7,6 +7,7 @@ import * as React from 'react';
 import { useColorScheme, StatusBar } from 'react-native';
 import { Navigation } from './navigation';
 import { CartProvider } from './context/CartContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 Asset.loadAsync([
   ...NavigationAssets,
@@ -18,13 +19,13 @@ SplashScreen.preventAutoHideAsync();
 
 const prefix = createURL('/');
 
-export function App() {
-  const colorScheme = useColorScheme();
-
+function AppContent() {
+  const { isDark } = useTheme();
+  const colorScheme = isDark ? 'dark' : 'light';
   const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
 
   return (
-    <CartProvider>
+    <>
       <StatusBar
         barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
         backgroundColor={colorScheme === 'dark' ? '#1a1a1a' : '#ffffff'}
@@ -40,6 +41,16 @@ export function App() {
           SplashScreen.hideAsync();
         }}
       />
-    </CartProvider>
+    </>
+  );
+}
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <CartProvider>
+        <AppContent />
+      </CartProvider>
+    </ThemeProvider>
   );
 }

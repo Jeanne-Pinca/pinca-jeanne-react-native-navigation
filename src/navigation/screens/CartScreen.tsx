@@ -5,10 +5,11 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
-  StyleSheet,
-  useColorScheme,
 } from 'react-native';
 import { useCart } from '../../context/CartContext';
+import { useTheme } from '../../context/ThemeContext';
+import { createCartScreenStyles } from './styles/cartScreenStyles';
+import { ClearCartButton } from '../../components/ClearCartButton';
 
 export function CartScreen() {
   const navigation = useNavigation();
@@ -18,117 +19,8 @@ export function CartScreen() {
     incrementQuantity,
     decrementQuantity,
   } = useCart();
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: isDark ? '#1a1a1a' : '#f5f5f5',
-    },
-    emptyContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    emptyText: {
-      fontSize: 16,
-      color: isDark ? '#aaa' : '#666',
-      marginBottom: 16,
-    },
-    cartItem: {
-      margin: 12,
-      padding: 12,
-      backgroundColor: isDark ? '#222' : '#fff',
-      borderRadius: 8,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 3,
-      elevation: 3,
-    },
-    itemInfo: {
-      flex: 1,
-    },
-    itemName: {
-      fontSize: 16,
-      fontWeight: '600',
-      color: isDark ? '#fff' : '#000',
-      marginBottom: 4,
-    },
-    itemPrice: {
-      fontSize: 14,
-      color: isDark ? '#aaa' : '#666',
-    },
-    quantityContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-    },
-    quantityButton: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: '#007AFF',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    quantityButtonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-      fontSize: 18,
-    },
-    quantity: {
-      fontSize: 14,
-      fontWeight: '600',
-      color: isDark ? '#fff' : '#000',
-      minWidth: 20,
-      textAlign: 'center',
-    },
-    removeButton: {
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      backgroundColor: '#FF3B30',
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginLeft: 8,
-    },
-    removeButtonText: {
-      color: '#fff',
-      fontWeight: 'bold',
-      fontSize: 18,
-    },
-    header: {
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: isDark ? '#333' : '#ddd',
-      backgroundColor: isDark ? '#222' : '#fff',
-    },
-    headerTitle: {
-      fontSize: 18,
-      fontWeight: '600',
-      color: isDark ? '#fff' : '#000',
-    },
-    checkoutButton: {
-      marginHorizontal: 12,
-      marginBottom: 12,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      backgroundColor: '#34C759',
-      borderRadius: 8,
-      alignItems: 'center',
-    },
-    checkoutButtonText: {
-      color: '#fff',
-      fontWeight: '600',
-      fontSize: 16,
-    },
-  });
+  const { isDark } = useTheme();
+  const styles = createCartScreenStyles(isDark);
 
   const renderCartItem = ({ item }: any) => (
     <View style={styles.cartItem}>
@@ -166,6 +58,7 @@ export function CartScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Shopping Cart</Text>
+        {cartItems.length > 0 && <ClearCartButton />}
       </View>
 
       {cartItems.length === 0 ? (
@@ -179,6 +72,7 @@ export function CartScreen() {
             renderItem={renderCartItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}
           />
           <TouchableOpacity
             style={styles.checkoutButton}
