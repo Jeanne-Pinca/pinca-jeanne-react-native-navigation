@@ -21,6 +21,7 @@ export const createProductFilterStyles = (isDark: boolean) =>
     },
     icon: {
       fontSize: 16,
+      color: isDark ? '#bdbdbd' : '#000',
     },
     modal: {
       flex: 1,

@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
   View,
-  FlatList,
   Text,
   TouchableOpacity,
 } from 'react-native';
@@ -10,6 +9,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { createHomeScreenStyles } from './styles/homeScreenStyles';
 import { ProductFilter } from '../../components/ProductFilter';
 import { AddToCartIndicator } from '../../components/AddToCartIndicator';
+import { RefreshableList } from '../../components/RefreshableList';
 
 export function HomeScreen() {
   const { products, categories, addToCart } = useCart();
@@ -26,6 +26,11 @@ export function HomeScreen() {
   const handleAddToCart = (product: any) => {
     addToCart(product);
     setShowIndicator(true);
+  };
+
+  const onRefresh = async () => {
+    // Add your data fetching logic here
+    console.log('Refreshing products...');
   };
 
   const renderProduct = ({ item }: any) => (
@@ -55,12 +60,13 @@ export function HomeScreen() {
           onCategorySelect={setSelectedCategory}
         />
       </View>
-      <FlatList
+      <RefreshableList
         data={filteredProducts}
         renderItem={renderProduct}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 20 }}
         showsVerticalScrollIndicator={false}
+        onRefresh={onRefresh}
       />
     </View>
   );

@@ -5,7 +5,7 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
-  Alert,
+  Modal,
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from 'react-native';
@@ -21,18 +21,18 @@ export function CheckoutScreen() {
   const [isScrollable, setIsScrollable] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [contentHeight, setContentHeight] = useState(0);
+  const [layoutHeight, setLayoutHeight] = useState(0);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const styles = createCheckoutScreenStyles(isDark);
 
   const handleCheckout = () => {
-    Alert.alert('Checkout Successful', 'Your order has been placed!', [
-      {
-        text: 'OK',
-        onPress: () => {
-          clearCart();
-          navigation.navigate('ShoppingTabs');
-        },
-      },
-    ]);
+    setShowSuccessModal(true);
+  };
+
+  const handleCheckoutSuccess = () => {
+    setShowSuccessModal(false);
+    clearCart();
+    navigation.navigate('ShoppingTabs');
   };
 
   const renderCheckoutItem = ({ item }: any) => (
@@ -48,11 +48,20 @@ export function CheckoutScreen() {
   );
 
   const handleContentSizeChange = (contentWidth: number, contentHeight: number) => {
-    const estimatedFixedHeight = 60 + 50 + 100 + 60; // header + indicator + total + button
     setContentHeight(contentHeight);
-    setIsScrollable(contentHeight > estimatedFixedHeight);
-    setIsAtBottom(false);
   };
+
+  // Update scrollable state whenever contentHeight or layoutHeight changes
+  React.useEffect(() => {
+    if (layoutHeight > 0 && contentHeight > 0) {
+      const scrollable = contentHeight > layoutHeight;
+      setIsScrollable(scrollable);
+      // If not scrollable, we're automatically at the bottom
+      if (!scrollable) {
+        setIsAtBottom(true);
+      }
+    }
+  }, [contentHeight, layoutHeight]);
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
@@ -63,6 +72,25 @@ export function CheckoutScreen() {
 
   return (
     <View style={styles.container}>
+      <Modal
+        visible={showSuccessModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSuccessModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>Checkout Successful</Text>
+            <Text style={styles.modalMessage}>Your order has been placed!</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={handleCheckoutSuccess}
+            >
+              <Text style={styles.modalButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Checkout</Text>
       </View>
@@ -73,20 +101,26 @@ export function CheckoutScreen() {
         </View>
       ) : (
         <>
-          <FlatList
-            data={cartItems}
-            renderItem={renderCheckoutItem}
-            keyExtractor={(item) => item.id}
-            scrollEnabled={true}
-            showsVerticalScrollIndicator={false}
-            onContentSizeChange={handleContentSizeChange}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-          />
-          <ItemsIndicator
-            itemCount={cartItems.length}
-            isScrollable={isScrollable && !isAtBottom}
-          />
+          <View style={styles.listArea}>
+            <FlatList
+              data={cartItems}
+              renderItem={renderCheckoutItem}
+              keyExtractor={(item) => item.id}
+              scrollEnabled={true}
+              showsVerticalScrollIndicator={false}
+              onContentSizeChange={handleContentSizeChange}
+              onScroll={handleScroll}
+              onLayout={(event) => {
+                const { height } = event.nativeEvent.layout;
+                setLayoutHeight(height);
+              }}
+              scrollEventThrottle={16}
+            />
+            <ItemsIndicator
+              itemCount={cartItems.length}
+              isScrollable={isScrollable && !isAtBottom}
+            />
+          </View>
           <View style={styles.totalSection}>
             <Text style={styles.totalLabel}>Total Amount</Text>
             <Text style={styles.totalPrice}>${getTotalPrice().toFixed(2)}</Text>

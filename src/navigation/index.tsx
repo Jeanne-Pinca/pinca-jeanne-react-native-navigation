@@ -4,36 +4,30 @@ import {
   StaticParamList,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Image, Text, View } from 'react-native';
-import bell from '../assets/bell.png';
-import newspaper from '../assets/newspaper.png';
+import { View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { HomeScreen } from './screens/HomeScreen';
 import { CartScreen } from './screens/CartScreen';
 import { CheckoutScreen } from './screens/CheckoutScreen';
 import { LightDarkToggle } from '../components/LightDarkToggle';
 import { CartBadge } from '../components/CartBadge';
+import { navigationStyles } from './styles/navigationStyles';
 
-function ShopTabLabel() {
-  return <Text>Shop</Text>;
-}
+const brandOrange = '#ff69b4';
 
 const ShoppingTabs = createBottomTabNavigator({
+  screenOptions: {
+    tabBarActiveTintColor: brandOrange,
+  },
   screens: {
     HomeTab: {
       screen: HomeScreen,
       options: {
         title: 'Shop',
         headerRight: () => <LightDarkToggle />,
-        tabBarLabel: ShopTabLabel,
+        tabBarLabel: 'Shop',
         tabBarIcon: ({ color, size }) => (
-          <Image
-            source={newspaper}
-            tintColor={color}
-            style={{
-              width: size,
-              height: size,
-            }}
-          />
+          <Ionicons name="storefront-outline" size={size} color={color} />
         ),
       },
     },
@@ -44,16 +38,9 @@ const ShoppingTabs = createBottomTabNavigator({
         title: 'Cart',
         headerRight: () => <LightDarkToggle />,
         tabBarLabel: 'Cart',
-        tabBarIcon: ({ color, size }) => (
-          <View style={{ position: 'relative' }}>
-            <Image
-              source={bell}
-              tintColor={color}
-              style={{
-                width: size,
-                height: size,
-              }}
-            />
+        tabBarIcon: ({ color, size, focused }) => (
+          <View style={navigationStyles.badgeContainer}>
+            <Ionicons name={focused ? 'cart' : 'cart-outline'} size={size} color={color} />
             <CartBadge />
           </View>
         ),
@@ -63,6 +50,9 @@ const ShoppingTabs = createBottomTabNavigator({
 });
 
 const RootStack = createNativeStackNavigator({
+  screenOptions: {
+    headerTintColor: brandOrange,
+  },
   screens: {
     ShoppingTabs: {
       screen: ShoppingTabs,
