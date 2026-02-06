@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Animated, Text } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { createItemsIndicatorStyles } from './styles/itemsIndicatorStyles';
+import { useFadingAnimation } from './hooks/useFadingAnimation';
 
 interface ItemsIndicatorProps {
   itemCount: number;
@@ -11,14 +12,26 @@ interface ItemsIndicatorProps {
 export function ItemsIndicator({ itemCount, isScrollable }: ItemsIndicatorProps) {
   const { isDark } = useTheme();
   const styles = createItemsIndicatorStyles(isDark);
+  const [shouldRender, setShouldRender] = useState(isScrollable);
+  const { opacity } = useFadingAnimation(isScrollable, {
+    minOpacity: 0,
+    duration: 180,
+    onFadeOutComplete: () => setShouldRender(false),
+  });
 
-  if (!isScrollable) {
+  useEffect(() => {
+    if (isScrollable) {
+      setShouldRender(true);
+    }
+  }, [isScrollable]);
+
+  if (!shouldRender) {
     return null;
   }
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { opacity }]}>
       <Text style={styles.text}>More items below</Text>
-    </View>
+    </Animated.View>
   );
 }

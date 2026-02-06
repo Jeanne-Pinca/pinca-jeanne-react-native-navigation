@@ -44,7 +44,7 @@ export const createHomeScreenStyles = (isDark: boolean) =>
       marginBottom: 12,
     },
     addButton: {
-      backgroundColor: '#34C759',
+      backgroundColor: '#ff69b4',
       paddingHorizontal: 16,
       paddingVertical: 8,
       borderRadius: 6,

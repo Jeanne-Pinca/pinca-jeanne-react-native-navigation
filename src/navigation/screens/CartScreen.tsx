@@ -2,7 +2,6 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
   View,
-  FlatList,
   Text,
   TouchableOpacity,
 } from 'react-native';
@@ -10,6 +9,7 @@ import { useCart } from '../../context/CartContext';
 import { useTheme } from '../../context/ThemeContext';
 import { createCartScreenStyles } from './styles/cartScreenStyles';
 import { ClearCartButton } from '../../components/ClearCartButton';
+import { RefreshableList } from '../../components/RefreshableList';
 
 export function CartScreen() {
   const navigation = useNavigation();
@@ -22,12 +22,20 @@ export function CartScreen() {
   const { isDark } = useTheme();
   const styles = createCartScreenStyles(isDark);
 
+  const onRefresh = async () => {
+  
+    console.log('Refreshing cart...');
+  };
+
   const renderCartItem = ({ item }: any) => (
     <View style={styles.cartItem}>
       <View style={styles.itemInfo}>
         <Text style={styles.itemName}>{item.name}</Text>
         <Text style={styles.itemPrice}>
-          ${(item.price * item.quantity).toFixed(2)} ({item.quantity}x ${item.price.toFixed(2)})
+          ${(item.price * item.quantity).toFixed(2)}{' '}
+          <Text style={styles.itemPriceBreakdown}>
+            ({item.quantity}x ${item.price.toFixed(2)})
+          </Text>
         </Text>
       </View>
       <View style={styles.quantityContainer}>
@@ -67,12 +75,13 @@ export function CartScreen() {
         </View>
       ) : (
         <>
-          <FlatList
+          <RefreshableList
             data={cartItems}
             renderItem={renderCartItem}
             keyExtractor={(item) => item.id}
             contentContainerStyle={{ paddingBottom: 20 }}
             showsVerticalScrollIndicator={false}
+            onRefresh={onRefresh}
           />
           <TouchableOpacity
             style={styles.checkoutButton}

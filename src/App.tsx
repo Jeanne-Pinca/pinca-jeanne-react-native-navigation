@@ -18,11 +18,19 @@ Asset.loadAsync([
 SplashScreen.preventAutoHideAsync();
 
 const prefix = createURL('/');
+const brandOrange = '#ff69b4';
 
 function AppContent() {
   const { isDark } = useTheme();
   const colorScheme = isDark ? 'dark' : 'light';
-  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme
+  const baseTheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+  const theme = {
+    ...baseTheme,
+    colors: {
+      ...baseTheme.colors,
+      primary: brandOrange,
+    },
+  };
 
   return (
     <>

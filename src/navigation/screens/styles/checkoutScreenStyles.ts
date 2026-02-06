@@ -28,6 +28,10 @@ export const createCheckoutScreenStyles = (isDark: boolean) =>
       fontWeight: '600',
       color: isDark ? '#fff' : '#000',
     },
+    listArea: {
+      flex: 1,
+      position: 'relative',
+    },
     checkoutItem: {
       margin: 12,
       padding: 12,
@@ -53,7 +57,7 @@ export const createCheckoutScreenStyles = (isDark: boolean) =>
     },
     itemDetails: {
       fontSize: 14,
-      color: isDark ? '#aaa' : '#666',
+      color: '#ff69b4',
     },
     itemPrice: {
       fontSize: 16,
@@ -93,5 +97,42 @@ export const createCheckoutScreenStyles = (isDark: boolean) =>
       color: '#fff',
       fontWeight: '600',
       fontSize: 16,
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 24,
+    },
+    modalCard: {
+      width: '100%',
+      maxWidth: 360,
+      backgroundColor: isDark ? '#222' : '#fff',
+      borderRadius: 12,
+      padding: 20,
+      borderWidth: 1,
+      borderColor: isDark ? '#333' : '#eee',
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: '700',
+      color: isDark ? '#fff' : '#000',
+      marginBottom: 8,
+    },
+    modalMessage: {
+      fontSize: 14,
+      color: isDark ? '#cfcfcf' : '#555',
+      marginBottom: 16,
+    },
+    modalButton: {
+      alignSelf: 'flex-end',
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+    },
+    modalButtonText: {
+      color: '#ff69b4',
+      fontWeight: '600',
+      fontSize: 14,
     },
   });
